@@ -16,7 +16,7 @@ This notebook cleans up VMS records.
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-repo") 
+knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
 ```
 <br>
 <br>

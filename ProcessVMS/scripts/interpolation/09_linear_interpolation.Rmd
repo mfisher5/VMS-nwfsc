@@ -7,7 +7,7 @@ Linear interpolation of time gaps that are either (1) less than 5 hours, or (2) 
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-repo") 
+knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
 ```
 <br>
 <br>

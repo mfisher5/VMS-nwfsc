@@ -14,7 +14,7 @@ Original version (12/17/2018) focused only on trips targeting Dungeness crab.
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-repo") 
+knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
 ```
 <br>
 <br>

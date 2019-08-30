@@ -79,7 +79,7 @@ PacFIN Column names key (https://pacfin.psmfc.org//wp-content/uploads/2016/06/Pa
 <br>
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "E:/VMS-repo")
+knitr::opts_knit$set(root.dir = "E:/VMS-nwfsc")
 ```
 
 

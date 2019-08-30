@@ -9,7 +9,7 @@ This script calculates the average speed for each VMS record, using the package 
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-repo") 
+knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
 getwd()
 ```
 

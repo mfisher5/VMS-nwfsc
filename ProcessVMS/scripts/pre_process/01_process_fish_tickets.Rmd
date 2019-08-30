@@ -31,7 +31,7 @@ A few key aspects of the processing code:
 
 Set Root Directory (for rest of script)
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "E:/Networks/Participation_Networks/") 
+knitr::opts_knit$set(root.dir = "E:/VMS-nwfsc") 
 ```
 
 

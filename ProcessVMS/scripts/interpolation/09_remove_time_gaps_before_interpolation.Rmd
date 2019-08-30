@@ -14,7 +14,7 @@ IF the maximum time gap is > 4 hours OR composes > 25% of the trip, Remove the t
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-repo") 
+knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
 ```
 <br>
 <br>
@@ -211,9 +211,39 @@ for(y in years){
 <br>
 
 
+### Edit VMS_lookback_pres in fish ticket data
+Read in fish tickets
+```{r tixdat}
+for(i in seq(1,length(years))){
+  tmptix <- read.csv(paste0(VMS_dir,"FishTix_wVMS_10d_lookback_",years[i],"_VMSedit.csv"))
+  if(i == 1){
+    tix <- tmptix
+  } else{
+    tix <- rbind(tix, tmptix)
+  }
+}
+colnames(tix)
+```
+<br>
 
+I want to use `2` to mark the trips which had VMS in the original matching code (`1`) but where VMS was removed during this filtering step. This is the same edit as in step 6, when trips were removed if the final VMS point was too far from the reported Port of Landing
+```{r update_tix}
+tix_out <- tix %>%
+  mutate(VMS_lookback_pres = ifelse(Rec_ID %in% unique(trips_removed$Rec_ID) | Rec_ID %in% unique(trips_removed_tmp$Rec_ID), 2, as.character(VMS_lookback_pres)))
 
+sum(tix$VMS_lookback_pres != tix_out$VMS_lookback_pres)/dim(tix_out)[1]
+```
+<br>
 
+Write out new fish ticket data
+```{r tix_out}
+for(i in seq(1,length(years))){
+  # filter data for VMS entries corresponding to fish tickets for that year
+  tix_out_tmp <- tix_out %>% 
+    filter(year(date) == years[i])
+  write.csv(x=tix_out_tmp, file=paste0(cleanVMS_dir,"FishTix_wVMS_10d_lookback_",years[i],"_VMSedit.csv"), row.names=FALSE)
+}
+```
 
 
 

@@ -12,7 +12,7 @@ This is version 2 of the code. In this version, the statement to search for the 
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "C:/Users/Mary.Fisher/Documents/VMS-repo") 
+knitr::opts_knit$set(root.dir = "C:/VMS-nwfsc") 
 ```
 <br>
 <br>

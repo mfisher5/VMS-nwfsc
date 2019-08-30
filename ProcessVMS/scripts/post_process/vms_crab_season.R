@@ -10,7 +10,7 @@
 rm(list=ls()) #clean workspace
 library(dplyr)
 
-setwd("C:/Users/Mary.Fisher/Documents/VMS-repo/ProcessVMS")
+setwd("D:/VMS-nwfsc/ProcessVMS")
 
 
 # Set Arguments ------------------------------------------
