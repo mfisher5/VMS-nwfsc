@@ -1,7 +1,12 @@
 ---
 title: "Filter for Time Gaps in VMS Data"
+author: M. Fisher
+date: (run `r Sys.Date()`)
 output: html_document
 ---
+
+
+### Purpose
 
 Last step before interpolation. Filters for time gaps over which it is unlikely that linear interpolation will be representative. According to the following rules:
 
@@ -14,32 +19,22 @@ IF the maximum time gap is > 4 hours OR composes > 25% of the trip, Remove the t
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
-```
-<br>
-<br>
-
-### Prep for running code
-Clear workspace
-```{r}
 rm(list=ls())
-```
-<br>
 
-Install packages
-```{r include=FALSE}
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 library(lubridate) 
 library(ggplot2)
 library(move)
+library(here)
+
+knitr::opts_knit$set(root.dir = here::here()) 
 ```
 <br>
 
-Create Objects / Data Frames
+### Choose directories and set objects
 ```{r}
 ## directory where filtered VMS data is stored as .csv file
-VMS_dir = "ProcessVMS/R_Output/match/unfiltered/cleaned/"
+VMS_dir = "R_Output/match/cleaned/"
 
 ## calendar years
 years <- c(2010)

@@ -1,10 +1,17 @@
 ---
 title: "Edit new unfiltered VMS files from OLE"
+author: M. Fisher
+date: Written 11/1/2018 (run `r Sys.Date()`)
 output: html_document
 ---
 
 
-The input VMS file should be partially pre-processed (cleaned, condensed) using a python script. The following changes needed to be made for further processing:
+### Purpose: 
+
+Finish processing raw VMS data from OLE. The input VMS file should be partially pre-processed (cleaned, condensed) using the `part1` python or Rmd script.
+
+
+#### Steps of Script:
 
 1. Add in Cartesian geocoordinates (after checking for missing lat/lon)
 
@@ -22,21 +29,21 @@ The input VMS file should be partially pre-processed (cleaned, condensed) using 
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "C:/VMS-nwfsc")
-
-library(readr)
+library(tidyverse)
 library(foreign)
-library(lubridate)
-library(dplyr)
 library(rgdal)
 library(raster)
 library(rgeos)
 library(sp)
 library(maps)
 library(ggplot2)
+library(here)
+
+knitr::opts_knit$set(root.dir = here::here())
 ```
 
 
+### Choose directories and set objects
 Choose year and lat/lon bounds of VMS data points (currently set conservatively around US West Coast waters.)
 ```{r}
 year = 2009
@@ -45,12 +52,15 @@ lon_lower = NA #-115 # if you do not want this filter, set to NA
 lat_lower = 32 # if you do not want this filter, set to NA
 lat_upper = 51 # if you do not want this filter, set to NA
 bathy_upper = 100
+
+indir <- "input_data/fromOLE_cleaned/"
 ```
 <br>
 
 ### Read in data
+It's best to use `read_csv` to catch any parsing errors made during step 1. 
 ```{r}
-mydat <- read_csv(paste0("Input_Data/fromOLE_cleaned/VMS_all_data_", year, ".csv"))
+mydat <- read_csv(paste0(indir,"VMS_all_data_", year, ".csv"))
 #17559561 rows
 colnames(mydat)
 ```
@@ -58,7 +68,7 @@ colnames(mydat)
 
 For some years, the declarations column has text instead of just a numerical code. If that's the case, you'll want to run the following code chunk so that read_csv doesn't throw errors. 
 ```{r eval=FALSE}
-mydat <- read_csv(paste0("Input_Data/fromOLE_cleaned/VMS_all_data_", year, ".csv"),
+mydat <- read_csv(paste0(indir,"VMS_all_data_", year, ".csv"),
                   col_types=cols(
                     UTCDATETIM = col_datetime(format = ""),
                     LATITUDE = col_double(),
@@ -275,6 +285,6 @@ mydat_ordered$UTCDATETIM <- as.character(mydat_ordered$UTCDATETIM)
 Write it out as both a `.dbf` and a `.csv`
 ```{r}
 mydat_ordered <- as.data.frame(mydat_ordered)
-write.dbf(dataframe=mydat_ordered, file=paste0("Input_Data/fromOLE_cleaned/bath_region_all_data_", year, "_edited.dbf"), factor2char=TRUE)
-write.csv(mydat_ordered, file=paste0("Input_Data/fromOLE_cleaned/bath_region_all_data_", year, "_edited.csv"), row.names=FALSE)
+write.dbf(dataframe=mydat_ordered, file=paste0(indir,"bath_region_all_data_", year, "_edited.dbf"), factor2char=TRUE)
+write.csv(mydat_ordered, file=paste0(indir,"bath_region_all_data_", year, "_edited.csv"), row.names=FALSE)
 ```

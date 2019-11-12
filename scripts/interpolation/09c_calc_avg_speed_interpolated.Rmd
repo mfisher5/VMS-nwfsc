@@ -3,35 +3,30 @@ title: "Calculate Average Speed with Interpolated Data"
 output: html_document
 ---
 
+
+### Purpose
+If the optional recalc_speed code was not run during interpolation, you can use this script to add in recalculated average speed. 
+
+
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
-```
-<br>
-<br>
-
-### Prep for running code
-Clear workspace
-```{r}
 rm(list=ls())
-```
-<br>
 
-Install packages
-```{r include=FALSE}
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 library(lubridate) 
 library(ggplot2)
 library(move)
 library(rgdal)
+library(here)
+
+knitr::opts_knit$set(root.dir = here::here()) 
 ```
 <br>
 
-Create Objects / Data Frames
+### Choose directories and set objects
 ```{r}
 ## directory where filtered VMS data is stored as .csv file
-VMS_dir = "ProcessVMS/R_Output/interpolation/"
+VMS_dir = "R_Output/interpolation/"
 
 ## calendar years
 y <- 2011

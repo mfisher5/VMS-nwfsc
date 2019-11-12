@@ -1,10 +1,11 @@
 ---
-title: "Pre-Processed_Fish_Tickets_for_VMS_match"
+title: "Pre-Processed Fish Tickets for VMS match"
+author: M. Fisher
+date: Written 11/1/2018 (run `r Sys.Date()`)
 output: html_document
 ---
-Date written: 11/1/2018
-Based on v3 of processing code written for DCRB VMS data.
-By: M. Fisher
+
+Based on: v3 of processing code written for DCRB VMS data.
 
 
 ### Purpose
@@ -29,33 +30,25 @@ A few key aspects of the processing code:
 *Changes for v4.2: preserves an adjusted version of the pacfin gear group (MSC split into DVG for diving, USP for unknown / unspecified, and FRM for Farm) in the final processed fish tickets.*
 <br>
 
-Set Root Directory (for rest of script)
+
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "E:/VMS-nwfsc") 
-```
-
-
-### Prepare workspace
-Clear workspace
-```{r}
 rm(list=ls())
-```
 
-
-Install packages
-```{r}
 library(foreign)
 library(qdapTools)
 library(lubridate)
 library(ggplot2)
 library(reshape2)
 library(janitor)
-library(stringr)
-library(tidyr)
-library(dplyr)
+library(tidyverse)
+library(here)
+
+knitr::opts_knit$set(root.dir = here::here(), echo=TRUE) # will set root directory to repository root folder
 ```
 
-Choose directories and set objects
+
+
+### Choose directories and set objects
 ```{r objects}
 ## input directory containing raw pacfin data. must include '/' at end
 rawdir <- "input_data/"
@@ -92,7 +85,6 @@ trap_pot_gear <- c("CRAB RING","BOTTOMFISH POT","CRAB OR LOBSTER POT","CRAB POT"
 ```
 
 
-
 Set filtering-related objects
 
 *part of the fish ticket processing adds columns to the output which specify the total amount and proportion of lbs / revenue attributed to certain species. all other species will be collapsed into an "other" column. use the following filtering options to select which species to retain. to leave in all species data, select `filter_type` = c("none"). Note that this will not affect which species are used to determine TARGET for each trip.*
@@ -108,7 +100,7 @@ revenue_cutoff <- NA     # choose cutoff for exvessel revenue. if none, set as N
 
 This should be a .csv file containing raw PacFIN data.
 ```{r rawdata}
-rawdat <- read.csv(paste0(rawdir,myfile))
+rawdat <- read.csv(paste0(rawdir,myfile), stringsAsFactors = FALSE)
 rawdat <- rawdat %>%
   filter(LANDING_YEAR %in%  years)
 ```
@@ -121,22 +113,16 @@ colnames(rawdat)
 
 ### Edit existing columns
 
-First, subset the raw data to include only the columns that are needed
+First, subset the raw data to include only the columns that are needed. Remove the columns where the vessel identifier (vessel number) is either "UNKNOWN" or blank ("")
 ```{r}
-rawdat.sub <- select(rawdat, c(FISH_TICKET_ID, PACFIN_PORT_CODE, PACFIN_GROUP_PORT_CODE, VESSEL_NUM, AGENCY_CODE, GEAR_CODE, GEAR_NAME, PACFIN_GROUP_GEAR_CODE, REMOVAL_TYPE_CODE, REMOVAL_TYPE_NAME, LANDING_DATE, LANDING_MONTH, LANDING_YEAR, PACFIN_SPECIES_CODE, LANDED_WEIGHT_LBS, EXVESSEL_REVENUE))
+rawdat.sub <- rawdat %>% dplyr::select(rawdat, c(FISH_TICKET_ID, PACFIN_PORT_CODE, PACFIN_GROUP_PORT_CODE, VESSEL_NUM, AGENCY_CODE, GEAR_CODE, GEAR_NAME, PACFIN_GROUP_GEAR_CODE, REMOVAL_TYPE_CODE, REMOVAL_TYPE_NAME, LANDING_DATE, LANDING_MONTH, LANDING_YEAR, PACFIN_SPECIES_CODE, LANDED_WEIGHT_LBS, EXVESSEL_REVENUE)) %>%
+  filter(VESSEL_NUM != "UNKNOWN" & VESSEL_NUM != "")
 ```
 
 Rename the columns that will be retained in the final processed data. The last three columns are used to calculate per-species / total revenue and landed weight, but will not ultimately be retained.
 ```{r}
 colnames(rawdat.sub) <- c("Rec_ID","pacfin_port_code", "port_group_code","drvid", "agency_code","gear_code", "gear_name", "gear_group", "removal_type_code", "removal_type_name", "date", "month", "year", 
                           "PACFIN_SPECIES_CODE", "LANDED_WEIGHT_LBS", "EXVESSEL_REVENUE")
-```
-
-Remove the columns where the vessel identifier (drvid) is either "UNKNOWN" or blank ("")
-```{r}
-rawdat.sub <- rawdat.sub %>%
-  filter(drvid != "UNKNOWN") %>%
-  filter(drvid != "")
 ```
 
 

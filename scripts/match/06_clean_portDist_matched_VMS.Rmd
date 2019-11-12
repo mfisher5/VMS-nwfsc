@@ -1,63 +1,52 @@
 ---
 title: "Clean up Matched VMS-Fishtix Data for Repeat Trips between Calendar Years"
+author: M. Fisher
+date: (run `r Sys.Date()`)
 output: html_document
 ---
 
-
+### Purpose
 This notebook cleans up VMS records. 
 
 
-**First Step:** Check for VMS records that may have been assigned to multiple fish tickets between years
+#### Steps of Script: 
 
-**Second Step:** Remove outlier trips where the Port of Landing is > 50km from the last VMS point of the associated trip. 
+1. Check for VMS records that may have been assigned to multiple fish tickets between years
+
+2. Remove outlier trips where the Port of Landing is > 50km from the last VMS point of the associated trip. 
 
 <br>
 *Version 2: Edited to better handle files from multiple years.*
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
-```
-<br>
-<br>
-
-### Prep for running code
-Clear workspace
-```{r}
 rm(list=ls())
-```
-<br>
-
-Install packages
-```{r}
-#install.packages("foreign")
-#install.packages("dplyr")
-#install.packages("tidyr")
-#install.packages("lubridate") #https://rstudio-pubs-static.s3.amazonaws.com/28038_1bcb9aa80ca84f27ace07d612872861a.html
 
 library(foreign)
-library(dplyr)
-library(tidyr)
-library(lubridate) #https://rstudio-pubs-static.s3.amazonaws.com/28038_1bcb9aa80ca84f27ace07d612872861a.html
+library(tidyverse)
+library(lubridate)
 library(ggplot2)
+library(here)
+
+knitr::opts_knit$set(root.dir = here::here()) 
 ```
 <br>
 
-Create Objects / Data Frames
+### Choose directories and set objects
 ```{r}
 ## directory where Blake's processed VMS data is stored as .dbf files
-origVMS_dir = "ProcessVMS/R_Output/match/unfiltered/"
+origVMS_dir = "R_Output/match/"
 
 ## directory where processed fish ticket data is stored as .csv file
-cleanVMS_dir = "ProcessVMS/R_Output/match/unfiltered/cleaned/"
+cleanVMS_dir = "R_Output/match/cleaned/"
 
 ## calendar years
 years <- c(2011)
 ```
 <br>
 
-### Read in the data
 
+### Read in the data
 First, the full vms data set
 ```{r data}
 vms_out <- read.csv(paste0(origVMS_dir,"VMS_Outputs_wTARGET_10d_lookback_",years[1],"_all.csv"))
@@ -68,8 +57,7 @@ if(length(years) > 1){
     vms_out <- rbind(vms_out, vms_out_tmp)
   }
 }
-```
-```{r}
+
 dim(vms_out)
 head(vms_out)
 ```
@@ -88,9 +76,7 @@ if(length(years) > 1){
     fishtix_out <- rbind(fishtix_out, fishtix_out_tmp)
   }
 }
-```
 
-```{r}
 head(fishtix_out)
 ```
 

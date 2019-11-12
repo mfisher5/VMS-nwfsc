@@ -1,36 +1,31 @@
 ---
 title: "Calculate Average Speed"
+author: M. Fisher
+date: Last Updated 12/21/2018 (run `r Sys.Date()`)
 output: html_document
 ---
 
-12/21/2018
+### Purpose
+
 This script calculates the average speed for each VMS record, using the package `move`. It is meant to be run on the VMS records that have already been matched to fish tickets. In order to calculate average speed, the script also has to remove duplicated VMS records (i.e., same time stamp for same vessel.)
 
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
-getwd()
-```
-
-### Prep for running code
-Clear workspace
-```{r}
 rm(list=ls())
+
+library(lubridate)
+library(tidyverse)
+library(move)
+library(here)
+
+knitr::opts_knit$set(root.dir = here::here()) 
 ```
 <br>
 
-Install packages
+### Choose directories and set objects
 ```{r}
-library(lubridate)
-library(ggplot2)
-library(move)
-library(dplyr)
-```
-
-Input variables
-```{r}
-vmsdir <- "ProcessVMS/R_Output/match/unfiltered/cleaned/"
+vmsdir <- "R_Output/match/cleaned/"
 years <- c(2012)
 max_speed <- 20 # in m/s
 ```
@@ -38,7 +33,7 @@ max_speed <- 20 # in m/s
 
 
 ### Read in data
-First, the cleaned VMS data
+Cleaned VMS data
 ```{r read}
 vmsdat <- read.csv(paste0(vmsdir,"VMS_Outputs_wTARGET_10d_lookback_", years[1],"_cleaned.csv"))
 if(length(years) > 1){

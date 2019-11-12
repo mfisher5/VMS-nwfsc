@@ -1,39 +1,34 @@
 ---
 title: "Interpolation"
+author: M. Fisher
+date: (run `r Sys.Date()`)
 output: html_document
 ---
 
+
+### Purpose
 Linear interpolation of time gaps that are either (1) less than 5 hours, or (2) accumulated when the vessel was in port. Uses the `move` package. 
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
-```
-<br>
-<br>
-
-### Prep for running code
-Clear workspace
-```{r}
 rm(list=ls())
-```
-<br>
 
-Install packages
-```{r include=FALSE}
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 library(lubridate) 
 library(ggplot2)
 library(move)
 library(rgdal)
+library(here)
+
+knitr::opts_knit$set(root.dir = here::here()) 
 ```
 <br>
 
-Create Objects / Data Frames
+
+### Choose directories and set objects
 ```{r}
 ## directory where filtered VMS data is stored as .csv file
-VMS_dir = "ProcessVMS/R_Output/interpolation/"
+VMS_dir = "R_Output/interpolation/"
 
 ## calendar years
 years <- c(2015)
@@ -46,8 +41,7 @@ recalc_speed = TRUE
 
 
 ### Read in the data
-
-First, the full vms data set
+VMS data
 ```{r rawdat}
 for(i in seq(1,length(years))){
   y <- years[i]

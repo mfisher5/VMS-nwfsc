@@ -1,37 +1,20 @@
 ---
 title: "Remove in-port VMS records"
+author: M. Fisher
+date: Last Updated 12/18/2018 (run `r Sys.Date()`)
 output: html_document
 ---
 
-Date: 12/18/2018
 
+### Purpose
+This script flags all "in-port" VMS records, using a buffer zone of 3km / 1.5km. In-port records with an average speed of < 1 are marked for removal. Only those records marked for removal before and after the fishing trip were actually removed from the filtered output data. 
 
-The purpose of this script is to flag all "in-port" VMS records, using a buffer zone of 3km / 1.5km. In-port records with an average speed of < 1 are marked for removal. Only those records marked for removal before and after the fishing trip were actually removed from the filtered output data. 
-Original version (12/17/2018) focused only on trips targeting Dungeness crab.
-
-*Version 2: performs filtering using the calculate average speed, rather than the reported average speed.*
+*Version 2: performs filtering using the calculate average speed, rather than the reported average speed. Does not filter for trips targeting Dungeness crab.*
 
 
 <br>
 ```{r "setup", include=FALSE}
-knitr::opts_knit$set(root.dir = "D:/VMS-nwfsc") 
-```
-<br>
-<br>
-
-### Prep for running code
-Clear workspace
-```{r}
 rm(list=ls())
-```
-<br>
-
-Install packages
-```{r include=FALSE}
-#install.packages("foreign")
-#install.packages("dplyr")
-#install.packages("tidyr")
-#install.packages("lubridate") #https://rstudio-pubs-static.s3.amazonaws.com/28038_1bcb9aa80ca84f27ace07d612872861a.html
 
 library(foreign)
 library(dplyr)
@@ -41,19 +24,22 @@ library(ggplot2)
 library(maps)
 library(rgdal)
 library(rgeos)
+library(here)
+
+knitr::opts_knit$set(root.dir = here::here()) 
 ```
 <br>
 
-Create Objects / Data Frames
+### Choose directories and set objects
 ```{r}
 ## directory where Blake's processed VMS data is stored as .dbf files
-origVMS_dir = "ProcessVMS/R_Output/match/unfiltered/cleaned/"
+origVMS_dir = "R_Output/match/cleaned/"
 
 ## directory where the filtered VMS data will be written out
-filterVMS_dir = "ProcessVMS/R_Output/match/unfiltered/cleaned/"
+filterVMS_dir = "R_Output/match/cleaned/"
 
 ## file with port coordinates, including directory
-coords_file = "Input_Data/port_coords_fromBlake_edited.csv"
+coords_file = "input_data/port_coords_fromBlake_edited.csv"
 
 ## calendar years
 years <- c(2011)
@@ -79,7 +65,6 @@ plot.me = FALSE
 <br>
 
 ### Read in the data
-
 First, the full vms data set
 ```{r rawdat}
 vms <- read.csv(paste0(origVMS_dir,"VMS_Outputs_wTARGET_10d_lookback_", years[1], "_speed_cleaned.csv"))

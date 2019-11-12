@@ -1,36 +1,39 @@
-## Vessel Monitoring System Data Analysis
+## Process Vessel Monitoring System (VMS) Data
 
-This repository contains all files used to analyze vessel monitoring system (VMS) data. Data and RMarkdown output are not included for confidentiality.
+This repository contains all files used to process vessel monitoring system (VMS) data. Data and RMarkdown output are not included for confidentiality.
+
 
 ### Project Overview
+There are three subprojects in processing VMS data: 
 
-#### Part I. Process VMS Data: 
-Create a pipeline to (1) pre-process VMS data, (2) match PacFIN fish ticket data to VMS data, and clean up VMS data from identified fishing trips, and (3) regularize VMS tracks
+1. pre-processing PacFIN fish tickets and VMS data, 
 
-#### Part II. Home Ranges: 
-Use utilization distributions to identify "home range" areas for groups.
+2. matching VMS to fish tickets, and 
 
-
-
+3. interpolating missing VMS data.
 <br>
 <br>
 
-### Repository Structure
 
-`Input_Data`: VMS data processed in ArcGIS, raw PacFIN fish ticket data. File formats either .csv or .dbf
+### Directory Structure
 
-`ProcessVMS`: files associated with **Part I.**, processing VMS data for further analysis. Includes raw data exploration / filtering, matching VMS to PacFIN fish tickets, and interpolation of missing data points.
+`input_data`: raw and prcoessed OLE VMS data, PacFIN fish ticket data. File formats either .csv or .dbf
 
-`HomeRange`: files associated with **Part II.**, calculating utilization distributions for use in home range analysis
+`methods`: images and ppt to keep track of methods. most content pasted into readme docs.
 
-<br>
-<br>
-<br>
-<br>
+`R_Output`: intermediate and final .csv, .dbf files output from R for both fish ticket and VMS data. Also includes visualizations saved as .png files.
+
+`resources`: 
+
+`results`: summaries of results
+
+`scripts`: all R scripts used to process VMS data.
+
+`verify_code`: R scripts, data, workspaces used to verify code
+
 <br>
 <br>
 <br>
 <br>
 
 *Additional documentation and most input / output from R is saved on Google Drive and NOAA server.*
-

@@ -1,1 +1,14 @@
-ProcessVMS/methods/*.pptx
+methods/*.pptx
+Input_Data/*.csv
+Input_Data/*/*.csv
+R_Output/*.csv
+R_Output/*/*.csv
+R_Output/*/*/*.csv
+R_Output/*/*/*.png
+R_Output/*/*/*.jpeg
+scripts/*.html
+scripts/*.csv
+scripts/*/*.html
+scripts/*/*.csv
+scripts/*/*/*.html
+scripts/*/*/*.csv

@@ -1,19 +1,30 @@
 ---
 title: "Calculate Vessel Length for DCRB Vessels TEMPLATE"
-output:
-  html_document:
-    df_print: paged
-  pdf_document: default
+author: M. Fisher
+date: Written 8/9/2018 (run `r Sys.Date()`)
+output: html_document
 ---
 
-Date:8/9/2018
 
+### Purpose
 This notebook conducts the final (v4.0) suggested decision tree for calculating vessel length from PacFIN data. The template allows for one year or multiple years of fish tickets to be run at the same time. Filtering in code block "get_dcrb_vessels" makes this template specific to fish tickets with Dungeness crab landings; to run code for all fish tickets, switch code block "get_dcrb_vessels" to `eval = FALSE` and code block "get_all_vessels" to `eval = TRUE` before knitting.
 <br>
 
 Currently, the code block to write out the calculated vessel lengths to a .csv file is set `eval=FALSE`. If you want to write out the key, be sure to set to `eval = TRUE` before knitting.
 
 <br>
+#### Steps of Script:
+
+1. Calculation of vessel lengths for X years of fish tickets. 
+<br>
+
+2. Summary of calculation output: proportion of fishing vessels missing lengths (per year), distribution of vessel lengths (per year and overall), vessel length against the number of years vessel length was recorded (per year), and the frequency of the calculation types used (per year and overall).
+<br>
+
+3. Application of calculated vessel lengths to appropriate fish tickets.
+<br>
+
+
 
 #### METHODS:
 <br>
@@ -52,23 +63,6 @@ Currently, the code block to write out the calculated vessel lengths to a .csv f
 
 <br>
 
-
-#### Script Includes:
-
-
-1. Calculation of vessel lengths for X years of fish tickets. 
-<br>
-
-2. Summary of calculation output: proportion of fishing vessels missing lengths (per year), distribution of vessel lengths (per year and overall), vessel length against the number of years vessel length was recorded (per year), and the frequency of the calculation types used (per year and overall).
-<br>
-
-3. Application of calculated vessel lengths to appropriate fish tickets.
-<br>
-
-
-
-<br>
-
 Resources:
 <br>
 PMSC Fleet Report (https://www.psmfc.org/efin/docs/fleetreport.pdf), esp Table 8
@@ -79,28 +73,25 @@ PacFIN Column names key (https://pacfin.psmfc.org//wp-content/uploads/2016/06/Pa
 <br>
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "E:/VMS-nwfsc")
-```
-
-
-Load packages
-```{r}
-library(dplyr)
+library(tidyverse)
 library(ggplot2)
+source(here::here("scripts/pre_process/","Report_Vessel_Length_processedtix_v4.1_functions.R")) #Note that if the frequencies are equivalent, getmode() function will return the first listed value
+
+knitr::opts_knit$set(root.dir = here::here())
 ```
 <br>
 
-#### Read in permit data
-Enter directory information
+
+### Choose directories and set objects
 ```{r}
-rawdatdir <- "Input_Data/"
-fishtixdir <- "Input_Data/processed_multisp/"
+rawdatdir <- "input_data/"
+fishtixdir <- "input_data/processed/"
 fishtix_years <- c(2006,2007)
-functionsdir <- "ProcessVMS/scripts/pre_process/"
-keydir <- "ProcessVMS/R_Output/length_keys/"
+keydir <- "R_Output/length_keys/"
 ```
 <br>
 
+#### Read in data
 Load permits data for 2016-2017 
 ```{r}
 permits1 <- read.csv(paste0(rawdatdir, "Vessel_Registrations_2016_2017.csv"))
@@ -130,6 +121,20 @@ colnames(permits); dim(permits)
 <br>
 
 
+Read in raw fish ticket .csv files to data frame "landings".
+```{r}
+landings <- read.csv(paste0(fishtixdir, "fish tickets ", fishtix_years[1], " processed_multispecies03.csv"))
+if(length(fishtix_years) > 1){
+  for(y in fishtix_years[2:length(fishtix_years)]){
+  tmp_landings <- read.csv(paste0(fishtixdir, "fish tickets ", y, " processed_multispecies03.csv"))
+  landings <- rbind(landings, tmp_landings)
+  }
+}
+```
+<br>
+
+
+
 #### Subset permit data and create functions to summarize vessel lengths
 
 Choose columns of interest and subset the data frame
@@ -151,36 +156,17 @@ pthin$VESSEL_LENGTH[pthin$VESSEL_LENGTH == 777] <- "NA"
 <br>
 
 Remove any vessel lengths greater than 200 or lower than 10. *Note - depending on the fishery, may want to change these cutoffs*
-```{r}
-pthin$VESSEL_LENGTH <- as.integer(pthin$VESSEL_LENGTH)
-```
 ```{r length_filter}
+pthin$VESSEL_LENGTH <- as.integer(pthin$VESSEL_LENGTH)
+
 pthin_length_filter <- pthin %>%
   filter(VESSEL_LENGTH < 200) %>%
   filter(VESSEL_LENGTH > 10)
 ```
 <br>
 
-Source functions. *Note that if the frequencies are equivalent, getmode() function will return the first listed value*
-```{r source_functions}
-source(paste0(functionsdir,"Report_Vessel_Length_processedtix_v4.1_functions.R"))
-```
 
-
-#### Read in processed Fish ticket Data and get list of fishing vessels (Dungeness crab specific)
-
-Read in raw fish ticket .csv files to data frame "landings".
-```{r}
-landings <- read.csv(paste0(fishtixdir, "fish tickets ", fishtix_years[1], " processed_multispecies03.csv"))
-if(length(fishtix_years) > 1){
-  for(y in fishtix_years[2:length(fishtix_years)]){
-  tmp_landings <- read.csv(paste0(fishtixdir, "fish tickets ", y, " processed_multispecies03.csv"))
-  landings <- rbind(landings, tmp_landings)
-  }
-}
-getwd()
-```
-<br>
+#### Get list of fishing vessels (Dungeness crab specific)
 
 Get list of all vessels (with vessel numbers present) for each year. Dungeness crab specific
 ```{r get_dcrb_vessels, eval=FALSE}
@@ -353,7 +339,7 @@ for(y in unique(vessels$year)){
                                      "HISTORIC_DATA" = historic_vec)
   ## bind this year's data frame to the end of the full data frame
   vessel_length_key_df <- rbind(vessel_length_key_df, tmp_vessel_length_key_df)
-  cat("wrote out", dim(tmp_vessel_length_key_df)[1], "lengths for", y, " to final data frame\n\n")
+  cat("saved ", dim(tmp_vessel_length_key_df)[1], "lengths for", y, " to final data frame\n\n")
 }
 ```
 
