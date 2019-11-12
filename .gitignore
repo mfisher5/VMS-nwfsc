@@ -1,6 +1,6 @@
 methods/*.pptx
-Input_Data/*.csv
-Input_Data/*/*.csv
+input_data/*.csv
+input_data/*/*.csv
 R_Output/*.csv
 R_Output/*/*.csv
 R_Output/*/*/*.csv
@@ -12,3 +12,4 @@ scripts/*/*.html
 scripts/*/*.csv
 scripts/*/*/*.html
 scripts/*/*/*.csv
+input_data/port_coordinates/*
